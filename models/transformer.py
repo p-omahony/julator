@@ -141,10 +141,10 @@ class TextGenerator(keras.callbacks.Callback):
         )
         print(f"generated text:\n{txt}\n")
 
-def predict_func(model, start_prompt, index_to_word, max_tokens):
+def predict_func(model, start_prompt, word_to_index, index_to_word, max_tokens):
 
     start_prompt = "a marseille"
-    start_tokens = [word_to_index.get(_, 1) for _ in start_prompt.split()] 
+    start_tokens = [word_to_index.get(_, 1) for _ in start_prompt.split()]
 
     def detokenize(number):
         return index_to_word[number]
