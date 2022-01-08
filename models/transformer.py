@@ -143,7 +143,6 @@ class TextGenerator(keras.callbacks.Callback):
 
 def predict_func(model, start_prompt, word_to_index, index_to_word, max_tokens):
 
-    start_prompt = "a marseille"
     start_tokens = [word_to_index.get(_, 1) for _ in start_prompt.split()]
 
     def detokenize(number):
