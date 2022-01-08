@@ -141,7 +141,7 @@ class TextGenerator(keras.callbacks.Callback):
         )
         print(f"generated text:\n{txt}\n")
 
-def predict(model, start_tokens, index_to_word, max_tokens):
+def predict_func(model, start_tokens, index_to_word, max_tokens):
 
     def detokenize(number):
         return index_to_word[number]
