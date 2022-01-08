@@ -140,3 +140,39 @@ class TextGenerator(keras.callbacks.Callback):
             [self.detokenize(_) for _ in self.start_tokens + tokens_generated]
         )
         print(f"generated text:\n{txt}\n")
+
+def predict(model, start_tokens, index_to_word, max_tokens):
+
+    def detokenize(number):
+        return index_to_word[number]
+
+    def sample_from(logits):
+        logits, indices = tf.math.top_k(logits, k=10, sorted=True)
+        indices = np.asarray(indices).astype("int32")
+        preds = keras.activations.softmax(tf.expand_dims(logits, 0))[0]
+        preds = np.asarray(preds).astype("float32")
+        return np.random.choice(indices, p=preds)
+
+    new_start_tokens = [_ for _ in start_tokens]
+    num_tokens_generated = 0
+    tokens_generated = []
+    while num_tokens_generated <= max_tokens:
+        pad_len = maxlen - len(new_start_tokens)
+        sample_index = len(new_start_tokens) - 1
+        if pad_len < 0:
+            x = new_start_tokens[:maxlen]
+            sample_index = maxlen - 1
+        elif pad_len > 0:
+            x = new_start_tokens + [0] * pad_len
+        else:
+            x = new_start_tokens
+        x = np.array([x])
+        y, _ = model.predict(x)
+        sample_token = sample_from(y[0][sample_index])
+        tokens_generated.append(sample_token)
+        new_start_tokens.append(sample_token)
+        num_tokens_generated = len(tokens_generated)
+    txt = " ".join(
+        [detokenize(_) for _ in start_tokens + tokens_generated]
+    )
+    print(f"generated text:\n{txt}\n")
