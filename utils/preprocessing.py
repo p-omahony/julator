@@ -55,4 +55,4 @@ def build_input_ds(batch_size, vocab_size, maxlen, filenames) :
     text_ds = text_ds.map(prepare_lm_inputs_labels)
     text_ds = text_ds.prefetch(tf.data.AUTOTUNE)
 
-    return text_ds
+    return text_ds, vocab
