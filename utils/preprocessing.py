@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 import random
 from tensorflow.keras import layers
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def read_data(file):
     file = open(file, "r", encoding = "utf8")
