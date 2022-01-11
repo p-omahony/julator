@@ -10,8 +10,7 @@ def lstm_data_prepare(dataX, dataY, seq_len, n_patterns, vocab_size):
 
     return X, y
 
-class LSTM:
-    """docstring for ."""
+class RNNLSTM:
 
     def __init__(self, X, y):
         self.X = X
