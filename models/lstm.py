@@ -1,7 +1,7 @@
 import numpy as np
 from keras.utils import np_utils
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout
+from keras.layers import LSTM, Dense, Dropout, Embedding
 
 def lstm_data_prepare(dataX, dataY, seq_len, n_patterns, vocab_size):
     X = np.reshape(dataX, (n_patterns, seq_len, 1))
