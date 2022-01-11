@@ -18,7 +18,7 @@ class RNNLSTM:
 
     def build_model(self):
         model = Sequential()
-        model.add(LSTM(256, input_shape=(self.X.shape[1], self.X.shape[2]), return_sequences=True))
+        model.add(LSTM(256, input_shape=(None, self.X.shape[2]), return_sequences=True))
         model.add(Dropout(0.2))
         model.add(LSTM(256))
         model.add(Dropout(0.2))
