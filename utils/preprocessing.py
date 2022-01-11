@@ -5,27 +5,35 @@ from tensorflow.keras import layers
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-def read_data(file):
-    file = open(file, "r", encoding = "utf8")
-    text = file.read()
-    #text = text.replace("\n\n", "\n").replace('"', '').lower()
+class CleanData :
+    def __init__(self, file):
+        self.file = file
 
-    return text
+        self.text = None
+        self.cleaned_lyrics = None
 
-def clean_lyrics(text) :
-    letters = ('!', '[', ']', 'ó', '%', '&', 'å','ø', 'æ', 'é', 'à', 'è', 'ù', 'â', 'ê', 'î', 'ô', 'û', 'ç', '?', '(', ')', ',', 'ë', '-', '2', 'œ', "'", 'ï', '9', '.', '"')
-    replacements = ('', '', '', 'o', '', '','a','o','ae', 'e', 'a', 'e', 'u', 'a', 'e', 'i', 'o', 'u', 'c', ' ', ' ', ' ', '', 'e', ' ', ' ','oe', ' ', 'i', '', '', '', '')
-    translationTable = str.maketrans(dict(zip(letters, replacements)))
-    cleaned_text = text.translate(translationTable)
-    lyrics = cleaned_text.lower().split("\n")
-    cleaned_lyrics = np.unique(lyrics)[1:].tolist()
+    def read_data(self):
+        file = open(self.file, "r", encoding = "utf8")
+        self.text = file.read()
+        #text = text.replace("\n\n", "\n").replace('"', '').lower()
 
-    return cleaned_lyrics
+    def clean_lyrics(self) :
+        letters = ('!', '[', ']', 'ó', '%', '&', 'å','ø', 'æ', 'é', 'à', 'è', 'ù', 'â', 'ê', 'î', 'ô', 'û', 'ç', '?', '(', ')', ',', 'ë', '-', '2', 'œ', "'", 'ï', '9', '.', '"')
+        replacements = ('', '', '', 'o', '', '','a','o','ae', 'e', 'a', 'e', 'u', 'a', 'e', 'i', 'o', 'u', 'c', ' ', ' ', ' ', '', 'e', ' ', ' ','oe', ' ', 'i', '', '', '', '')
+        translationTable = str.maketrans(dict(zip(letters, replacements)))
+        cleaned_text = self.text.translate(translationTable)
+        lyrics = cleaned_text.lower().split("\n")
+        self.cleaned_lyrics = np.unique(lyrics)[1:].tolist()
 
-def write_lyrics(file, lyrics) :
-    for l in lyrics :
-        with open(file, 'a') as f :
-            f.write(l.strip()+'\n')
+    def write_lyrics(self, file) :
+        for l in self.cleaned_lyrics :
+            with open(file, 'a') as f :
+                f.write(l.strip()+'\n')
+
+    def __call__(self, output_file):
+        self.read_data()
+        self.clean_lyrics()
+        self.write_lyrics(output_file)
 
 def build_input_ds(batch_size, vocab_size, maxlen, filenames) :
     random.shuffle(filenames)
