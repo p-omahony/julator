@@ -33,7 +33,7 @@ class CleanData :
     def __call__(self, output_file):
         self.read_data()
         self.clean_lyrics()
-        self.write_lyrics(output_file)
+        #self.write_lyrics(output_file)
 
 def build_input_ds(batch_size, vocab_size, maxlen, filenames) :
     random.shuffle(filenames)
