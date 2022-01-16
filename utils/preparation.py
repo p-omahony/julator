@@ -1,31 +1,42 @@
-class WordSeqDataLoader :
-    def __init__(self, corpus, word=True):
-        self.corpus = corpus.replace('\n', ' ')
-        self.word = word
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+import tensorflow.keras.utils as ku 
+import numpy as np
 
-        if word:
-            self.vocab = sorted(list(set(corpus.split())))
-            self.corpus_size = len(corpus.split())
-        else:
-            self.vocab = sorted(list(set(corpus)))
-            self.corpus_size = len(corpus)
-        self.vocab_size = len(self.vocab)
-        self.v_to_int = dict((c, i) for i, c in enumerate(self.vocab))
-        self.int_to_v = dict((i, c) for i, c in enumerate(self.vocab))
+class DataLoader:
 
-    def to_seq(self, seq_len):
-        dataX, dataY = [], []
-        for i in range(0, self.corpus_size - seq_len, 1):
+    def __init__(self, file) :
+        self.file = file
 
-            if self.word:
-            	seq_in = self.corpus.split()[i:i + seq_len]
-            	seq_out = self.corpus.split()[i + seq_len]
-            else:
-                seq_in = self.corpus[i:i + seq_len]
-                seq_out = self.corpus[i + seq_len]
+        self.corpus = None
+        self.tokenizer = None
+        self.input_sequences = None
+        self.total_words = None
 
-            dataX.append([self.v_to_int[e] for e in seq_in])
-            dataY.append(self.v_to_int[seq_out])
+    def tokenize(self) :
+        tokenizer = Tokenizer()
+        data = open(self.file).read()
+        self.corpus = data.lower().split("\n")
+        tokenizer.fit_on_texts(self.corpus)
+        self.total_words = len(tokenizer.word_index) + 1
+        self.tokenizer = tokenizer
+        return tokenizer
 
-        n_patterns = len(dataX)
-        return dataX, dataY, n_patterns
+    def txt2seq(self, padding=True):
+        input_sequences = []
+        for line in self.corpus:
+            token_list = self.tokenizer.texts_to_sequences([line])[0]
+            for i in range(1, len(token_list)):
+                n_gram_sequence = token_list[:i+1]
+                input_sequences.append(n_gram_sequence)
+        if padding:
+            max_sequence_len = max([len(x) for x in input_sequences])
+            input_sequences = np.array(pad_sequences(input_sequences, maxlen=max_sequence_len, padding='pre'))
+        self.input_sequences = input_sequences
+        return input_sequences
+
+    def get_input_data(self) :
+        predictors, label = self.input_sequences[:,:-1],self.input_sequences[:,-1]
+        label = ku.to_categorical(label, num_classes=self.total_words)
+
+        return predictors, label
